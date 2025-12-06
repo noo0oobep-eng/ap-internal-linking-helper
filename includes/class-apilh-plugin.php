@@ -15,19 +15,19 @@ class APILH_Plugin {
 
     private function __construct() {
         add_action('init', [$this, 'init']);
-        add_action('admin_notices', [$this, 'admin_notice']);
+        add_action('enqueue_block_editor_assets', [$this, 'enqueue_editor_assets']);
     }
 
     public function init() {
         // Future: register editor sidebar, REST endpoints, etc.
     }
 
-    public function admin_notice() {
-        if (!current_user_can('manage_options')) {
-            return;
-        }
+    public function enqueue_editor_assets() {
+        $handle = 'apilh-editor';
+        $src    = APILH_URL . 'assets/js/editor.js';
+        $deps   = ['wp-plugins', 'wp-edit-post', 'wp-element', 'wp-components', 'wp-data', 'wp-i18n'];
+        $ver    = defined('APILH_VERSION') ? APILH_VERSION : '0.1.0';
 
-        echo '<div class="notice notice-success is-dismissible"><p>AP Internal Linking Helper is active.</p></div>';
+        wp_enqueue_script($handle, $src, $deps, $ver, true);
     }
 }
-
