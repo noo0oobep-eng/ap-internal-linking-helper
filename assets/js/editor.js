@@ -5,6 +5,13 @@
     }
 
     const { registerPlugin } = wp.plugins;
+    const { PluginSideba/* global wp */
+(function () {
+    if (!wp || !wp.plugins || !wp.editPost) {
+        return;
+    }
+
+    const { registerPlugin } = wp.plugins;
     const { PluginSidebar } = wp.editPost;
     const { createElement: el, useEffect, useState } = wp.element;
     const { PanelBody, Button, Spinner, Notice } = wp.components;
@@ -43,13 +50,10 @@
         return el(
             PanelBody,
             { title: "AP Internal Linking Helper", initialOpen: true },
-            error
-                ? el(Notice, { status: "error", isDismissible: false }, error)
-                : null,
 
-            loading
-                ? el(Spinner, null)
-                : null,
+            error ? el(Notice, { status: "error", isDismissible: false }, error) : null,
+
+            loading ? el(Spinner, null) : null,
 
             !loading && items.length === 0
                 ? el("p", null, "No suggestions yet.")
@@ -113,3 +117,4 @@
             ),
     });
 })();
+
