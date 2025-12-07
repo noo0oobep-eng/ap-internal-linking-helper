@@ -16,8 +16,7 @@
         const [loading, setLoading] = useState(false);
         const [error, setError] = useState("");
 
-        const postId =
-            select("core/editor")?.getCurrentPostId?.() || 0;
+        const postId = select("core/editor")?.getCurrentPostId?.() || 0;
 
         const loadSuggestions = () => {
             setLoading(true);
@@ -81,7 +80,9 @@
                                           fontSize: "11px",
                                       },
                                   },
-                                  item.type
+                                  item.type,
+                                  item.same_category ? " • same category" : "",
+                                  item.same_tag ? " • same tag" : ""
                               )
                           )
                       )
@@ -117,5 +118,3 @@
             ),
     });
 })();
-
-
