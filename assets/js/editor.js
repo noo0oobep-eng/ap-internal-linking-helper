@@ -5,13 +5,6 @@
     }
 
     const { registerPlugin } = wp.plugins;
-    const { PluginSideba/* global wp */
-(function () {
-    if (!wp || !wp.plugins || !wp.editPost) {
-        return;
-    }
-
-    const { registerPlugin } = wp.plugins;
     const { PluginSidebar } = wp.editPost;
     const { createElement: el, useEffect, useState } = wp.element;
     const { PanelBody, Button, Spinner, Notice } = wp.components;
@@ -23,7 +16,8 @@
         const [loading, setLoading] = useState(false);
         const [error, setError] = useState("");
 
-        const postId = select("core/editor")?.getCurrentPostId?.() || 0;
+        const postId =
+            select("core/editor")?.getCurrentPostId?.() || 0;
 
         const loadSuggestions = () => {
             setLoading(true);
@@ -51,7 +45,9 @@
             PanelBody,
             { title: "AP Internal Linking Helper", initialOpen: true },
 
-            error ? el(Notice, { status: "error", isDismissible: false }, error) : null,
+            error
+                ? el(Notice, { status: "error", isDismissible: false }, error)
+                : null,
 
             loading ? el(Spinner, null) : null,
 
@@ -97,7 +93,11 @@
                 { style: { marginTop: "12px" } },
                 el(
                     Button,
-                    { variant: "secondary", onClick: loadSuggestions, disabled: loading },
+                    {
+                        variant: "secondary",
+                        onClick: loadSuggestions,
+                        disabled: loading,
+                    },
                     "Refresh"
                 )
             )
@@ -117,4 +117,5 @@
             ),
     });
 })();
+
 
