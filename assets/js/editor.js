@@ -15,6 +15,7 @@
         const [items, setItems] = useState([]);
         const [loading, setLoading] = useState(false);
         const [error, setError] = useState("");
+        const [copiedId, setCopiedId] = useState(0);
 
         const postId = select("core/editor")?.getCurrentPostId?.() || 0;
 
@@ -33,6 +34,26 @@
                 .finally(() => {
                     setLoading(false);
                 });
+        };
+
+        const copyLink = async (item) => {
+            try {
+                if (navigator?.clipboard?.writeText) {
+                    await navigator.clipboard.writeText(item.link);
+                } else {
+                    // fallback
+                    const ta = document.createElement("textarea");
+                    ta.value = item.link;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(ta);
+                }
+                setCopiedId(item.id);
+                window.setTimeout(() => setCopiedId(0), 1200);
+            } catch (e) {
+                setError("Copy failed. You can still open the link.");
+            }
         };
 
         useEffect(() => {
@@ -56,33 +77,64 @@
 
             !loading && items.length > 0
                 ? el(
-                      "ul",
-                      { style: { marginLeft: "1.2em" } },
+                      "div",
+                      null,
                       items.map((item) =>
                           el(
-                              "li",
-                              { key: item.id },
-                              el(
-                                  "a",
-                                  {
-                                      href: item.link,
-                                      target: "_blank",
-                                      rel: "noopener noreferrer",
+                              "div",
+                              {
+                                  key: item.id,
+                                  style: {
+                                      padding: "8px 0",
+                                      borderBottom: "1px solid rgba(0,0,0,0.06)",
                                   },
-                                  item.title || "(Untitled)"
+                              },
+                              el(
+                                  "div",
+                                  { style: { marginBottom: "6px" } },
+                                  el(
+                                      "a",
+                                      {
+                                          href: item.link,
+                                          target: "_blank",
+                                          rel: "noopener noreferrer",
+                                          style: { fontWeight: 600 },
+                                      },
+                                      item.title || "(Untitled)"
+                                  ),
+                                  el(
+                                      "span",
+                                      {
+                                          style: {
+                                              opacity: 0.6,
+                                              marginLeft: "6px",
+                                              fontSize: "11px",
+                                          },
+                                      },
+                                      item.type
+                                  )
                               ),
                               el(
-                                  "span",
-                                  {
-                                      style: {
-                                          opacity: 0.6,
-                                          marginLeft: "6px",
-                                          fontSize: "11px",
+                                  "div",
+                                  { style: { display: "flex", gap: "6px" } },
+                                  el(
+                                      Button,
+                                      {
+                                          variant: "secondary",
+                                          size: "small",
+                                          onClick: () => copyLink(item),
                                       },
-                                  },
-                                  item.type,
-                                  item.same_category ? " • same category" : "",
-                                  item.same_tag ? " • same tag" : ""
+                                      copiedId === item.id ? "Copied" : "Copy link"
+                                  ),
+                                  el(
+                                      Button,
+                                      {
+                                          variant: "tertiary",
+                                          size: "small",
+                                          onClick: () => window.open(item.link, "_blank", "noopener"),
+                                      },
+                                      "Open"
+                                  )
                               )
                           )
                       )
