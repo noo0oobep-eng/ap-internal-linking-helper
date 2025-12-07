@@ -93,7 +93,7 @@ class APILH_Plugin {
 
         $items = [];
 
-        // 1) Related first (same category/tag)
+        // Related first
         if (!empty($tax_query)) {
             $related_args = [
                 'post_type'      => ['post', 'page'],
@@ -122,7 +122,7 @@ class APILH_Plugin {
             }
         }
 
-        // 2) Fill remaining with recent
+        // Fill remaining with recent
         $remaining = 5 - count($items);
 
         if ($remaining > 0) {
