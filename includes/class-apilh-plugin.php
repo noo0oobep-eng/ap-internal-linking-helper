@@ -18,9 +18,54 @@ class APILH_Plugin {
         add_action('enqueue_block_editor_assets', [$this, 'enqueue_editor_assets']);
     }
 
-    public function init() {
-        // Future: register editor sidebar, REST endpoints, etc.
-    }
+public function init() {
+    add_action('rest_api_init', [$this, 'register_rest_routes']);
+}
+
+public function register_rest_routes() {
+    register_rest_route('apilh/v1', '/suggestions', [
+        'methods'  => 'GET',
+        'callback' => [$this, 'get_suggestions'],
+        'permission_callback' => function () {
+            return current_user_can('edit_posts');
+        },
+        'args' => [
+            'post_id' => [
+                'required' => false,
+                'type'     => 'integer',
+            ],
+        ],
+    ]);
+}
+
+public function get_suggestions($request) {
+    $post_id = (int) $request->get_param('post_id');
+
+    $args = [
+        'post_type'      => ['post', 'page'],
+        'post_status'    => 'publish',
+        'posts_per_page' => 5,
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+        'post__not_in'   => $post_id ? [$post_id] : [],
+        'no_found_rows'  => true,
+    ];
+
+    $posts = get_posts($args);
+
+    $items = array_map(function ($p) {
+        return [
+            'id'    => $p->ID,
+            'title' => get_the_title($p),
+            'link'  => get_permalink($p),
+            'type'  => $p->post_type,
+        ];
+    }, $posts);
+
+    return rest_ensure_response([
+        'items' => $items,
+    ]);
+}
 
 public function enqueue_editor_assets() {
     $handle = 'apilh-editor';
