@@ -41,7 +41,6 @@
                 if (navigator?.clipboard?.writeText) {
                     await navigator.clipboard.writeText(item.link);
                 } else {
-                    // fallback
                     const ta = document.createElement("textarea");
                     ta.value = item.link;
                     document.body.appendChild(ta);
@@ -52,7 +51,7 @@
                 setCopiedId(item.id);
                 window.setTimeout(() => setCopiedId(0), 1200);
             } catch (e) {
-                setError("Copy failed. You can still open the link.");
+                setError("Copy failed.");
             }
         };
 
@@ -65,15 +64,10 @@
             PanelBody,
             { title: "AP Internal Linking Helper", initialOpen: true },
 
-            error
-                ? el(Notice, { status: "error", isDismissible: false }, error)
-                : null,
-
+            error ? el(Notice, { status: "error", isDismissible: false }, error) : null,
             loading ? el(Spinner, null) : null,
 
-            !loading && items.length === 0
-                ? el("p", null, "No suggestions yet.")
-                : null,
+            !loading && items.length === 0 ? el("p", null, "No suggestions yet.") : null,
 
             !loading && items.length > 0
                 ? el(
@@ -109,9 +103,11 @@
                                               opacity: 0.6,
                                               marginLeft: "6px",
                                               fontSize: "11px",
-                                          },
                                       },
-                                      item.type
+                                      },
+                                      item.type,
+                                      item.same_category ? " • same category" : "",
+                                      item.same_tag ? " • same tag" : ""
                                   )
                               ),
                               el(
@@ -146,11 +142,7 @@
                 { style: { marginTop: "12px" } },
                 el(
                     Button,
-                    {
-                        variant: "secondary",
-                        onClick: loadSuggestions,
-                        disabled: loading,
-                    },
+                    { variant: "secondary", onClick: loadSuggestions, disabled: loading },
                     "Refresh"
                 )
             )
