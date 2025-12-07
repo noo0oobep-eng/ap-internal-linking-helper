@@ -103,7 +103,7 @@
                                               opacity: 0.6,
                                               marginLeft: "6px",
                                               fontSize: "11px",
-                                      },
+                                          },
                                       },
                                       item.type,
                                       item.same_category ? " • same category" : "",
